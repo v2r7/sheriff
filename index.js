@@ -12,7 +12,7 @@ const CHANNEL_ID = '1270355007732056077';
 
 const dbClass = require("pro.db-arzex")
 let db = new dbClass("points.json")
-let prole = "1230496880304066610"
+let prole = "1270355006658449527"
 let prefix = "-";
 
 client.on('messageCreate', async message => {
