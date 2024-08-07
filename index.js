@@ -26,17 +26,6 @@ client.once('ready', () => {
 
 const CHANNEL_ID = '1270355007732056077';
 
-let owner = ['1270355006733815831'];
-client.on(Events.MessageCreate, async message => {
-  if (message.content.startsWith('set-streaming')) {
-    if (!owner.includes(message.author.id)) return;
-    const ac = message.content.split(" ").slice(1).join(" ");
-    if (!ac) return message.channel.send('**Activity ?**');
-    client.user.setActivity(ac, { type: 'STREAMING', url: `https://www.twitch.tv/olrp_` });
-    message.channel.send(`**Set Activity ${ac} ✅**`);
-  }
-});
-
 client.on(Events.MessageCreate, async message => {
   if (message.author.bot) return;
 
@@ -217,26 +206,6 @@ client.on(Events.MessageCreate, async message => {
   }
 });
 
-client.on(Events.MessageCreate, async message => {
-  if (message.content.startsWith('-sk')) {
-    message.delete();
-
-    const embed1 = new EmbedBuilder()
-      .setTitle('Police Sheriff <:5_CancTs:1270510964193890436>')
-      .setImage('https://cdn.discordapp.com/attachments/1125317634414608424/1238434239226183691/970041967708880896.png')
-      .setColor('#ada174');
-
-    const button1 = new ButtonBuilder()
-      .setStyle(ButtonStyle.Link)
-      .setLabel('Military Schedule')
-      .setURL('https://cdn.discordapp.com/attachments/1227958420729102397/1270690452974342194/IMG_9479.png');
-
-    const actionRow = new ActionRowBuilder().addComponents(button1);
-
-    // تأكد من تغيير `mentionedUser` إلى `message.author`
-    message.author.send({ embeds: [embed1], components: [actionRow] });
-  }
-});
 
 // تسجيل الدخول
 client.login(process.env.token);
