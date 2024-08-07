@@ -8,7 +8,7 @@ client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-const CHANNEL_ID = '1270355007044063363';
+const CHANNEL_ID = '1270355007732056077';
 
 
 client.on(Events.MessageCreate, async (message) => {
@@ -171,7 +171,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
         const channel = client.channels.cache.get(CHANNEL_ID);
         if (channel) {
-            await channel.send({ content: `صاحب البلاغ : ${interaction.user}`, embeds: [embed] });
+            await channel.send({ content: `صاحب البلاغ : ${interaction.user} & <@&1270355006645604521>`, embeds: [embed] });
         } else {
             console.error('Channel not found');
         }
