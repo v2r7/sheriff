@@ -10,6 +10,127 @@ client.once('ready', () => {
 
 const CHANNEL_ID = '1270355007732056077';
 
+const dbClass = require("pro.db-arzex")
+let db = new dbClass("points.json")
+let prole = "1230496880304066610"
+let prefix = "-";
+
+client.on('messageCreate', async message => {
+    if (message.content.startsWith(prefix + 'setup')) {
+        let e = new MessageEmbed()
+            .setColor("DarkBlue")
+            .setTitle("**Sing In - Sing Out**")
+            .setDescription("## - You can log in or out using the buttons below")
+          .setFooter({text : "OldLaw Police .",iconURL:message.guild?.iconURL()});
+
+        const row = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('login')
+                .setLabel('Sing In')
+                .setStyle('SUCCESS'),
+            new MessageButton()
+                .setCustomId('logout')
+                .setLabel('Sing Out')
+                .setStyle('DANGER')
+        );
+
+        message.channel.send({ embeds: [e], components: [row] });
+    }
+});
+
+client.on('interactionCreate', async interaction => {
+  if (interaction.isButton()) {
+    if (interaction.customId === 'login') {
+      const channel = client.channels.cache.get('1270355008214405175');
+
+      const embed = new MessageEmbed()
+        .setDescription(`**تسجيل دخول\n\nالشخص:\n${interaction.user}\n\nالوقت:\n\`${new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh', hour12: true })}\`**`)
+        .setAuthor(interaction.user.username, interaction.user.displayAvatarURL({ dynamic: true }))
+        .setThumbnail(interaction.guild.iconURL({ dynamic: true }));
+
+      await interaction.reply({ content: 'تم تسجيل دخولك بنجاح', ephemeral: true });
+      channel.send({ embeds: [embed] });
+    } else if (interaction.customId === 'logout') {
+      const modal = new Modal()
+        .setCustomId('send')
+        .setTitle('التقرير اليومي');
+
+      const tokenBot = new TextInputComponent()
+        .setCustomId('leaves')
+        .setLabel('تقرير الخروج')
+        .setMinLength(1)
+        .setMaxLength(3000)
+        .setPlaceholder('أكتب تقريرك هنا')
+        .setStyle('PARAGRAPH');
+
+      const ModalRow1 = new MessageActionRow().addComponents(tokenBot);
+      modal.addComponents(ModalRow1);
+      await interaction.showModal(modal);
+    }
+  } else if (interaction.isModalSubmit()) {
+    if (interaction.customId === 'send') {
+      const channel = client.channels.cache.get('1270355008214405176');
+
+      const leaves = interaction.fields.getTextInputValue('leaves');
+      const embed = new MessageEmbed()
+        .setDescription(`**تسجيل خروج\n\nالشخص:\n${interaction.user}\n\nالوقت:\n\`${new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh', hour12: true })}\`\nالتقرير:\n${leaves}**`)
+        .setAuthor(interaction.user.username, interaction.user.displayAvatarURL({ dynamic: true }))
+        .setThumbnail(interaction.guild.iconURL({ dynamic: true }));
+
+      await interaction.reply({ content: 'تم تسجيل خروجك بنجاح', ephemeral: true });
+      await channel.send({ embeds: [embed] });
+    }
+  }
+});
+
+/////////
+
+client.on("messageCreate", async message => {
+  if (message.content.startsWith("=points")) {
+    let member = message.mentions.members.first() || message.member;
+    let points = db.has(`${member.nickname} `) ? db.get(`${member.nickname} `) : 0;
+    message.reply({ content: `**my points ${member} is \`${points}\`**` });
+  }
+
+  if (message.content.startsWith("=add-points")) {
+    if (!message.member.roles.cache.has(prole)) return;
+    let args = message.content.split(" ");
+    if (!args[2]) return message.reply(`**Please Writing
+\`=add-ponts member Points\`**`);
+    let member = message.mentions.members.first();
+    if (!member) return message.reply(`**Please Writing
+\`=add-ponts member Points\`**`);
+    db.add(`${member.nickname} `, parseInt(args[2]));
+    message.reply({ content: `**Added \`${args[2]}\` Point to** ${member}` });
+  }
+});
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log(reason)
+});
+
+process.on('uncaughtException', (err, origin) => {
+  console.log(err)
+});
+
+process.on('uncaughtExceptionMonitor', (err, origin) => {
+  console.log(err)
+});
+
+
+//////////
+
+let owner = ['1270355006733815831']
+client.on('messageCreate', async message => {
+  if(message.content.startsWith(prefix + 'set-streaming')) {
+  if(!owner.includes(message.author.id)) return;
+  const ac = message.content.split(" ").slice(1).join(" ")
+  if(!ac) return message.channel.send('**Activity ?**')
+  client.user.setActivity(ac,{ type : 'STREAMING', url : `https://www.twitch.tv/olrp_`})
+  message.channel.send(`**Set Activity ${ac} ✅**`)
+  }
+});
+
 
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
