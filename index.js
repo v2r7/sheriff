@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 // استيراد مكتبات discord.js
 const { Client, GatewayIntentBits, Events, ActionRowBuilder, TextInputBuilder, TextInputStyle, ModalBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const discordModals = require('discord-modals');
-const client = new Client({ intents: [intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.GUILD_SCHEDULED_EVENTS] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 discordModals(client); // This line ensures discord-modals is initialized
 
@@ -25,111 +25,6 @@ client.once('ready', () => {
 });
 
 const CHANNEL_ID = '1270355007732056077';
-
-const dbClass = require("pro.db-arzex");
-let db = new dbClass("points.json");
-let prole = "1270355006658449527";
-let prefix = "-";
-
-client.on(Events.MessageCreate, async message => {
-  if (message.content.startsWith(prefix + 'setup')) {
-    let e = new EmbedBuilder()
-      .setColor("DarkBlue")
-      .setTitle("**Sign In - Sign Out**")
-      .setDescription("## - You can log in or out using the buttons below")
-      .setFooter({ text: "OldLaw Police .", iconURL: message.guild?.iconURL() });
-
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('login')
-        .setLabel('Sign In')
-        .setStyle(ButtonStyle.Success),
-      new ButtonBuilder()
-        .setCustomId('logout')
-        .setLabel('Sign Out')
-        .setStyle(ButtonStyle.Danger)
-    );
-
-    message.channel.send({ embeds: [e], components: [row] });
-  }
-});
-
-client.on(Events.InteractionCreate, async interaction => {
-  if (interaction.isButton()) {
-    if (interaction.customId === 'login') {
-      const channel = client.channels.cache.get('1270355008214405175');
-
-      const embed = new EmbedBuilder()
-        .setDescription(`**Sign In\n\nUser:\n${interaction.user}\n\nTime:\n\`${new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh', hour12: true })}\`**`)
-        .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-        .setThumbnail(interaction.guild.iconURL({ dynamic: true }));
-
-      await interaction.reply({ content: 'You have successfully signed in', ephemeral: true });
-      channel.send({ embeds: [embed] });
-    } else if (interaction.customId === 'logout') {
-      const modal = new ModalBuilder()
-        .setCustomId('send')
-        .setTitle('Daily Report');
-
-      const tokenBot = new TextInputBuilder()
-        .setCustomId('leaves')
-        .setLabel('Leave Report')
-        .setMinLength(1)
-        .setMaxLength(3000)
-        .setPlaceholder('Write your report here')
-        .setStyle(TextInputStyle.Paragraph);
-
-      const ModalRow1 = new ActionRowBuilder().addComponents(tokenBot);
-      modal.addComponents(ModalRow1);
-      await interaction.showModal(modal);
-    }
-  } else if (interaction.isModalSubmit()) {
-    if (interaction.customId === 'send') {
-      const channel = client.channels.cache.get('1270355008214405176');
-
-      const leaves = interaction.fields.getTextInputValue('leaves');
-      const embed = new EmbedBuilder()
-        .setDescription(`**Sign Out\n\nUser:\n${interaction.user}\n\nTime:\n\`${new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh', hour12: true })}\`\nReport:\n${leaves}**`)
-        .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-        .setThumbnail(interaction.guild.iconURL({ dynamic: true }));
-
-      await interaction.reply({ content: 'You have successfully signed out', ephemeral: true });
-      await channel.send({ embeds: [embed] });
-    }
-  }
-});
-
-client.on(Events.MessageCreate, async message => {
-  if (message.content.startsWith("=points")) {
-    let member = message.mentions.members.first() || message.member;
-    let points = db.has(`${member.nickname} `) ? db.get(`${member.nickname} `) : 0;
-    message.reply({ content: `**my points ${member} is \`${points}\`**` });
-  }
-
-  if (message.content.startsWith("=add-points")) {
-    if (!message.member.roles.cache.has(prole)) return;
-    let args = message.content.split(" ");
-    if (!args[2]) return message.reply(`**Please use
-\`=add-points member Points\`**`);
-    let member = message.mentions.members.first();
-    if (!member) return message.reply(`**Please use
-\`=add-points member Points\`**`);
-    db.add(`${member.nickname} `, parseInt(args[2]));
-    message.reply({ content: `**Added \`${args[2]}\` Point to** ${member}` });
-  }
-});
-
-process.on('unhandledRejection', (reason, p) => {
-  console.log(reason);
-});
-
-process.on('uncaughtException', (err, origin) => {
-  console.log(err);
-});
-
-process.on('uncaughtExceptionMonitor', (err, origin) => {
-  console.log(err);
-});
 
 let owner = ['1270355006733815831'];
 client.on(Events.MessageCreate, async message => {
