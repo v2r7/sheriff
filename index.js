@@ -25,6 +25,7 @@ client.once('ready', () => {
 });
 
 const CHANNEL_ID = '1270355007732056077';
+const prefix = '-';
 
 let owner = ['1270355006733815831'];
 client.on(Events.MessageCreate, async message => {
