@@ -25,11 +25,10 @@ client.once('ready', () => {
 });
 
 const CHANNEL_ID = '1270355007732056077';
-const prefix = '-';
 
 let owner = ['1270355006733815831'];
 client.on(Events.MessageCreate, async message => {
-  if (message.content.startsWith(prefix + 'set-streaming')) {
+  if (message.content.startsWith('set-streaming')) {
     if (!owner.includes(message.author.id)) return;
     const ac = message.content.split(" ").slice(1).join(" ");
     if (!ac) return message.channel.send('**Activity ?**');
